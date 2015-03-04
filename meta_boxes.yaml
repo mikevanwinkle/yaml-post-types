@@ -1,0 +1,16 @@
+---
+books_metabox:
+  id: books_metabox
+  title: Book info
+  object_types: 
+    - books 
+    - post
+  priority: high
+  show_names: true
+  context: normal
+  fields:
+    book_summary:
+      name: book summary
+      desc: Quick summary of the book
+      id: book_summary
+      type: textarea
