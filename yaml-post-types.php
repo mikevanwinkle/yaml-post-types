@@ -84,9 +84,13 @@ Class Yamlfy {
 	}
 
   public function load_meta_boxes($meta_boxes) {
-      $this->mbs = $meta_boxes;
-			add_filter("cmb2_meta_boxes", function($mbs) { return array_merge($mbs, $this->mbs); });
+    $this->mbs = $meta_boxes;
+		add_filter("cmb2_meta_boxes", array($this, 'merge_mbs'));
   }
+
+	public function merge_mbs($mbs) {
+		return array_merge($mbs, $this->mbs);
+	}
 
   public function error($message) {
     $this->error = $message;
