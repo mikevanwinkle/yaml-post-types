@@ -20,7 +20,13 @@ class TestYamlfyInstance extends PHPUnit_Framework_TestCase {
 		$configs = $yamlfy->loadConfigs();
 		foreach ($configs as $config) {
 			$this->assertArrayHasKey('post_types',$config);
+			$yamlfy->register_post_types($config['post_types']);
 		}
+		
+		// make sure our post type was registered
+		$post_types = get_post_types();
+		$this->assertContains('books',$post_types);
+		
 	}
 
 }
