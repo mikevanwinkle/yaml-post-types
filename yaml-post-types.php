@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Yaml Post Types and Meta Boxes
-Version: 0.1-alpha
+Version: 0.1.0-alpha
 Description: Enables the creation of posts types and meta boxes ( via CMB2 ) using simple yaml configuration files
 Author: Mike Van Winkle
 Author URI: http://www.mikevanwinkle.com
@@ -32,8 +32,7 @@ Class Yamlfy {
     return self::$instance;
   }
 
-  public function init() {
-    try {
+	public function loadConfigs() {
       $parser = new \Symfony\Component\Yaml\Parser(); 
       $finder = new \Symfony\Component\Finder\Finder();
 			if( !$configs = get_transient('yaml-post-types-configs') ) {
@@ -45,6 +44,12 @@ Class Yamlfy {
       	}
 				set_transient('yaml-post-types-configs', $configs);
 			}
+			return $configs;
+	}
+
+  public function init() {
+    try {
+			$configs = $this->loadConfigs();
 			foreach($configs as $config) {
   			$post_types = $taxonomies = $meta_boxes = $index = false;
   			if (array_key_exists('post_types', $config)) {
