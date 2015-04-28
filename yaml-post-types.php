@@ -37,7 +37,7 @@ Class Yamlfy {
       $finder = new \Symfony\Component\Finder\Finder();
 			if( !$configs = get_transient('yaml-post-types-configs') ) {
 	      $dirs = apply_filters('yamlfy-config-dirs', array(dirname(__FILE__)));
-  	    $finder->name('*.yaml')->files()->in($dirs);
+  	    $finder->name('*.yaml')->files()->in($dirs)->notPath('tests');
     	  $configs = array();
       	foreach ( $finder as $file ) {
         	  $configs[] = $parser->parse( $file->getContents() );
@@ -59,7 +59,6 @@ Class Yamlfy {
 		  	if (array_key_exists('taxonomies',$config)) {
 			  	$this->register_taxonomies($config['taxonomies']);
 			  }
-		
 	  		if (array_key_exists('meta_boxes',$config)) {
 		  		$this->load_meta_boxes($config['meta_boxes']);
 		  	}
