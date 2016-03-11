@@ -1,65 +1,30 @@
 ---
-post_types: 
-  books:
-    labels: 
-      name: Books
-      singular_name: Book
-    public: true
-    show_ui: true
-    menu_position: 5
-    menu_icon: dashicons-book
-  authors:
-    labels:
-      name: Authors
-      singular_name: Author
-    public: true
-    menu_position: 5
-    menu_icon: dashicons-businessman
-
-taxonomies:
-  genre:
-    object_type: books
-    args: 
-      label: Genre
-      public: true
-      show_ui: true
-
 meta_boxes:
-  books_metabox:
-    id: books_metabox
-    title: Book info
+  schools_metabox:
+    id: general_mb
+    title: Custom Fields
     object_types: 
-      - books 
       - post
+      - page
     priority: high
     show_names: true
     context: normal
-    fields:
-      book_summary:
-        name: Summary
-        desc: Quick summary of the book
-        id: book_summary
-        type: textarea
-      book_image:
-        name: Book image
-        desc: Upload the cover image to use
-        id: book_image
-        type: file
-      affiliate_link:
-        name: Link
-        desc: Amazon link for book
-        id: affiliate_link
-        type: text_url
-      genre:
-        name: Genre
-        id: book_genre
-        type: taxonomy_multicheck
-        taxonomy: genre
-      author:
-        name: Author
-        id: book_author
-        type: custom_attached_posts
-        options: 
-          query_args: 
-            post_type: authors
-
+    fields: 
+      shorter_title: 
+        name: Shorter Title
+        id: shorter_title
+        type: text 
+        desc: Some places in the theme require a short version of the title
+  color_metabox:
+    id: color_metabox
+    title: Color
+    object_types: 
+      - term
+    taxonomies: 
+      - category
+    fields: 
+      testing: 
+        name: Testing
+        id: testing 
+        type: text
+        desc: testing

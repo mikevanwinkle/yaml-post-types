@@ -62,9 +62,13 @@ Class Yamlfy {
 	  		if (array_key_exists('meta_boxes',$config)) {
 		  		$this->load_meta_boxes($config['meta_boxes']);
 		  	}
+
+            if (array_key_exists('relationships', $config) AND function_exists('p2p_register_connection_type')) {
+                $this->load_relationships($config['relationships']);
+            }
       }
     } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
-        $this->error("Could not parse {$file->getFilename()}:{$e->getMessage()}");
+        $this->error("Could not parse config file(s):{$e->getMessage()}");
     }  catch(\Exception $e) {
       $this->error($e->getMessage());
     }
@@ -84,8 +88,14 @@ Class Yamlfy {
 
   public function load_meta_boxes($meta_boxes) {
     $this->mbs = $meta_boxes;
-		add_filter("cmb2_meta_boxes", array($this, 'merge_mbs'));
+	add_filter("cmb2_meta_boxes", array($this, 'merge_mbs'));
   }
+
+	public function load_relationships($relationships) {
+		foreach($relationships as $rel) {
+			p2p_register_connection_type($rel);
+		}
+	}
 
 	public function merge_mbs($mbs) {
 		return array_merge($mbs, $this->mbs);
