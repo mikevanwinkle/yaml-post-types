@@ -1,17 +1,17 @@
 <?php
 /*
 Plugin Name: Yaml Post Types and Meta Boxes
-Version: 0.1.0-alpha
+Version:1.0-alpha
 Description: Enables the creation of posts types and meta boxes ( via CMB2 ) using simple yaml configuration files
 Author: Mike Van Winkle
 Author URI: http://www.mikevanwinkle.com
 Plugin URI: http://www.mikevanwinkle.com/project/yaml-post-types
-Text Domain: yamlfy
+Text Domain: yaml-config
 Domain Path: /languages
 */
-ini_set('display_errors',1);
 Class Yamlfy {
-  const version = '0.1.0-alpha';
+  const version = '1.0';
+  const textdomain = 'yaml-config';
   static $instance;
   
   public function __construct() {
@@ -23,6 +23,49 @@ Class Yamlfy {
       require_once dirname(__FILE__) .'/vendor/cmb2-attached-posts/cmb2-attached-posts-field.php';
     }
     add_action('init',array( $this, 'init' ));
+    add_action('current_screen', array($this,'maybeRefreshConfig'));
+    add_action('admin_menu', array($this,'settings_page'));
+  }
+  
+  public function maybeRefreshConfig() {
+      $screen = get_current_screen();
+      if(!$screen->id == 'tools_page_yaml-config') return;
+      if(isset($_GET['refresh'])) {
+          delete_transient('yaml-post-types-configs');
+          $cookie = array(['class'=>'notice-success','message'=>'Configuration refreshed!']);
+          setcookie('yamlconfigmessage', json_encode($cookie), time()+3);
+          wp_redirect('tools.php?page=yaml-config');
+      }
+      if (isset($_COOKIE['yamlconfigmessage'])) {
+          $this->notice = json_decode(stripslashes($_COOKIE['yamlconfigmessage']));
+          $this->notice = $this->notice[0];
+          add_action('admin_notices', array($this,'successMessage'));
+      }
+  }
+  
+  public function successMessage() {
+      echo '<div class="notice '.$this->notice->class.' is-dismissible">
+            <p>'.__( $this->notice->message, self::textdomain ).'</p></div>';
+  }
+  
+  public function settings_page() {
+      add_submenu_page('tools.php','Yaml Config', 'Yaml Config', 'administrator', 'yaml-config', array($this, 'settings_callback'));
+  }
+  
+  public function settings_callback() {
+      $parser = new \Symfony\Component\Yaml\Parser(); 
+      $finder = new \Symfony\Component\Finder\Finder();
+      $dumper = new \Symfony\Component\Yaml\Dumper();
+      $files = [];
+      $dirs = apply_filters('yamlfy-config-dirs', array(dirname(__FILE__)));
+      $finder->name('*.yaml')->files()->in($dirs)->notPath('tests');
+      foreach( $finder as $file ) {
+          $files[] = $file->getPath().'/'.$file->getFilename();
+      }
+      // set some variables 
+      $td = self::textdomain;
+      $configs = $this->loadConfigs();
+      include_once "settings-page.php";    
   }
 
   static function instance() {

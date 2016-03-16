@@ -24,7 +24,7 @@ meta_boxes:
       - category
     fields: 
       testing: 
-        name: Testing
-        id: testing 
-        type: text
-        desc: testing
+        name: Color
+        id: color
+        type: colorpicker
+        desc: pick a color
